@@ -1,7 +1,7 @@
 <?
-class ModuleVideo extends AppModel {
+class ModuleDownload extends AppModel {
 
-	public $table = "videos";
+	public $table = "downloads";
 	protected $uses = array('trash','status');
 
 	public function __construct() {
