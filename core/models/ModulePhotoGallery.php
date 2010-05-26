@@ -1,10 +1,9 @@
 <?
-class ModuleNews extends AppModel {
+class ModulePhotoGallery extends AppModel {
+
+	public $table = "photo_galleries";
 	
-	// Nome da tabela do modelo.
-	public $table = "news";
-	// Nome do modelo.
-	public $name = "New";
+	public $name = "PhotoGallery";
 	
 	protected $uses = array('trash','status');
 

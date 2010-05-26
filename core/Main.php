@@ -13,8 +13,11 @@ if(BENCHMARK){
  * @return void
  * @author Danillo César de Oliveira Melo
  */
-function include_model($model) {
-	require CORE.'/models/Module'.$model.'.php';
+function include_model($model, $super = null) {
+	if($super === null) {
+		$super = $model;
+	}
+	require CORE.'/models/Module'.$super.'.php';
 	require ROOT.'/models/'.$model.'.php';
 }
 

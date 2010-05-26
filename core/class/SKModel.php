@@ -158,10 +158,65 @@ abstract class SKModel {
 	 		}
 	
 		}
+		
+		
+		// TODO: Usar array_filter
+		if(in_array('photos',$params['include'])){
+			
+			$ids = array();
+			foreach ($records as $record) {
+				$ids[] = "'".$record['gallery_id']."'";
+			}
+			$ids = join(',',$ids);
+			
+			
+			$recordType = "Modules::".$this->getModelName();
+			$photos = $this->connection->find('SELECT * FROM core_images WHERE gallery_id IN ('.$ids.')');
+			
+			$gallery_ids = array();
+			foreach ($photos as $photo) {
+				$gallery_ids[] = $photo['gallery_id'];
+			}
+			
+			$gallery_ids = array_unique($gallery_ids);
+			// Seta as photos nos registros como array vazio
+			foreach ($records as $key => $value) {
+				$records[$key]['photos'] = $this->filter_by_value($photos,'gallery_id',$records[$key]['gallery_id']);
+			}
+		}
 		return $records; 
 	}
 	
 	
+	/**
+	 * Filter values from one multi array 
+	 *
+	 */
+	function filter_by_value ($array, $index, $value) {
+		$newarray = array();
+       if(is_array($array) && count($array)>0) {
+           foreach(array_keys($array) as $key){
+               $temp[$key] = $array[$key][$index];
+
+               if ($temp[$key] == $value) {
+                   $newarray[$key] = $array[$key];
+               }
+           }
+         }
+     return $newarray;
+   }
+
+
+	/**
+	 * Get a model name
+	 *
+	 * @return string
+	 */
+	function getModelName() {
+		$name = get_class($this);
+		if(!empty($this->name)) $name = $this->name;
+		return ucfirst(strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $name)));
+	}
 	
 	//Adiciona a cláusula WHERE os valores a serem utilizados pelos modulos
 	public function getStringWhere($paramWhere) {
