@@ -1,12 +1,7 @@
 <?php
 	abstract class SKController {
-			
-		//Helpers padrão para toda a aplicação
-		#private $default_helpers = array('Html','Date','Text','Image');
 		
 		protected $template;
-
-		protected $modelPaginate;
 		
 		protected $layout = "default";
 		protected $helpers = array();
@@ -22,12 +17,12 @@
 			$this->i18n = $i18n;
 			$this->params = $request->params;
 			$this->template = new SKTemplate();
-			$this->loadHelpers();
-			$this->beforeFilter();
 			$this->request = $request;
 		}
 
 		public function beforeFilter() {}
+		
+		public function afterFilter() {}
 		
 		public function add($key, $value){
 			$this->template->add($key, $value);
@@ -75,7 +70,7 @@
 		
 		
 		function redirect($url) {
-			header('Location: '.SITE_URL.$url);
+			header('Location: '.APP_URL.$url);
 		}
 		
 		
@@ -84,31 +79,44 @@
 		}
 		
 		public function execute($action) {
+			
+			$this->beforeFilter();
 			$this->$action();
+			$this->afterFilter();
+			
+			$this->loadHelpers();
 			$this->render($action);
+		}
+		
+		
+		public function helpers($helpers)	{
+			$helpers = is_array($helpers) ? $helpers : array($helpers);
+			$this->helpers = array_merge($this->helpers, $helpers);
 		}
 
 		// Adiciona os helpers no html.
 		private function loadHelpers() {
-			$paginateIndex = array_search('Paginate', $this->helpers);
-			if ($paginateIndex !== false) {
-				require CORE."/helpers/PaginateHelper.php";
-				$this->add("paginate", new PaginateHelper($this->i18n, $this->modelPaginate));
-				unset($this->helpers[$paginateIndex]);
-			}
-
-			//TODO REFACTORE
-			foreach ($this->config['default_helpers'] as $helper) {
-				require CORE."/helpers/".$helper."Helper.php";
-				$class = $helper.'Helper';
-				$this->add(strtolower($helper), new $class($this->i18n));
-			}
+			// Helpers existentes no core.
+			$core_helpers = array('Date','Html','Image','Text','Paginate');
+			
+			$this->helpers = array_merge($this->helpers, $this->config['default_helpers']);
+			
+			// Adiciona os helpers na view.
 			foreach ($this->helpers as $helper) {
+				$local = in_array($helper, $core_helpers) ? CORE : ROOT;
+				require $local."/helpers/".$helper."Helper.php";
 				$class = $helper.'Helper';
-				require ROOT."/helpers/".$helper."Helper.php";
 				$this->add(strtolower($helper), new $class($this->i18n));
 			}
-		
+			
+			// Adiciona os helpers requeridos em outros helpers.
+			foreach ($this->helpers as $helper) {
+				$helper = $this->template->get(strtolower($helper));
+				foreach ($helper->uses as $name) {
+					$name = strtolower($name);
+					$helper->$name = $this->template->get($name);
+				}
+			}
 		}	
 		
 			

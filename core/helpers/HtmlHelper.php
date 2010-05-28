@@ -4,7 +4,7 @@ class HtmlHelper extends SKHelper {
 	private $styleSheets = array();
 	
 	function url($v){
-		return SITE_URL.$v;
+		return APP_URL.$v;
 	}
 	
 	function link() {

@@ -7,11 +7,13 @@ abstract class SKModel {
 	const PUBLISHED = 1;
 	const DRAFT = 2;
 
-	private static $params = array('fields' => '*', 'where' => 1, 'join' => '', 'order' => '`order` DESC','group_by'=>'','include'=>array());
+	public $params = array('fields' => '*', 'where' => 1, 'join' => '', 'order' => '`order` DESC','group_by'=>'','include'=>array());
 
 	private $imported_functions = array();
 
 	public $connection;
+	
+	protected $perPage = 10;
 
 	protected $uses = array();
 	private $usesColumns = array('trash' => '`deleted` = 0', 'status' => '`status` = 1');
@@ -27,6 +29,8 @@ abstract class SKModel {
 		}
 	}
 
+
+	
 	public function __call($method, $args) {
 		// Verifica se realmente existe o método desejado
 		if(array_key_exists($method, $this->imported_functions)) {
@@ -35,6 +39,8 @@ abstract class SKModel {
 		}
 		throw new Exception ('Verifique se você chamou o método import no modelo: ' . $method);
 	}
+
+
 
 	protected function imports($class) {
 		// TODO: 
@@ -68,7 +74,7 @@ abstract class SKModel {
 		 'order' => 'DESC'
 		 )*/
 
-		 $params = array_merge(self::$params, $params);
+		 $params = array_merge($this->params, $params);
 
 		
 		// SELECTS
@@ -92,7 +98,7 @@ abstract class SKModel {
 		$sql .= " ORDER BY ".$params['order'];
 		$sql .= (!empty($params['limit'])? " LIMIT ".$params['limit']:"");
 		
-
+		//print_r($sql);
 		$records = $this->connection->find_with_key($sql,$this->primaryKey);
 		
 		
@@ -114,7 +120,7 @@ abstract class SKModel {
 		$ids = join(',',$ids);
 		
 		// Inclui nos registros seus selects e options.
-		if(in_array('selects',$params['include'])){
+		if(in_array('selector',$params['include'])){
 			// Se já houver selects não consulta
 			if(empty($selects)){
 				$name = get_class($this);
@@ -181,7 +187,15 @@ abstract class SKModel {
 			$gallery_ids = array_unique($gallery_ids);
 			// Seta as photos nos registros como array vazio
 			foreach ($records as $key => $value) {
-				$records[$key]['photos'] = $this->filter_by_value($photos,'gallery_id',$records[$key]['gallery_id']);
+				
+				$photos = $this->filter_by_value($photos,'gallery_id',$records[$key]['gallery_id']);
+				
+				// Adiciona o campo url na foto.
+				foreach ($photos as $k => $value) {
+					$photos[$k]['url'] = MODULES_PATH.$this->table.'/'.$records[$key]['id'].'/'.$records[$key]['gallery_id'].'/sk_'.$value['id'].$value['extension'];
+				}
+				
+				$records[$key]['photos'] = $photos;
 			}
 		}
 		return $records; 
@@ -230,7 +244,7 @@ abstract class SKModel {
 	
 	
 	public function findFirst($params = array()) {
-		$params = array_merge(self::$params, $params);
+		$params = array_merge($this->params, $params);
 		$params['limit'] = 1;
 		$record = $this->findAll($params);
 		if(!$record) return false;

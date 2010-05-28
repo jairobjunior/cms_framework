@@ -1,52 +1,147 @@
 <?php
 class PaginateHelper extends SKHelper {
 	
-	private $model;
-	
-	public function __construct($i18n, $model = null){
+
+	public function __construct($i18n){
 		parent::__construct($i18n);
-		$this->model = $model;
 	}
 	
-	public function hasNext() {
-		return $this->model->hasNext();
+	public function hasPage($page) {
+		return $page->hasPage();
 	}
 	
-	public function hasPrev() {
-		return $this->model->hasPrev();
+	public function hasNext($page) {
+		return $page->hasNextPage();
 	}
 	
-	public function urlNext() {
-		return $this->getFormatedUrl($this->model->getNext());
+	public function hasPrev($page) {
+		return $page->hasPrevPage();
+	}
+	
+	public function current($page) {
+		return $page->currentPage;
+	}
+	
+	public function urlNext($page, $url = "") {
+		return $this->getFormatedUrl($page->getNextPage(), $url);
 	}
 
-	public function urlPrev() {
-		return $this->getFormatedUrl($this->model->getPrev());
+	public function urlPrev($page, $url = "") {
+		return $this->getFormatedUrl($page->getPrevPage(), $url);
 	}
 
-	public function urlLastPage() {
-		return $this->getFormatedUrl($this->model->getLastPage());
+	public function urlLastPage($page, $url = "") {
+		return $this->getFormatedUrl($page->getLastPage(), $url);
 	}
 	
-	public function urlPages($url) {
+	
+	
+	public function show($page, $options = array()) {
+		if(!$this->hasPage($page)) return '';
+		
+		$defaults = array('type'=>'full','class'=>'paginate','url'=>'','range'=>10);
+		$options = array_merge($defaults, $options);
+		
+		$types = array(
+			'full' => array('_prev','_pages','_next'),
+			'simple' => array('_prev','_next'),
+			'next' => array('_next'),
+			'prev' => array('_prev')
+		);
+		
+		$html = '<div class="'.$options['class'].'">';
+		foreach ($types[$options['type']] as $value) {
+			$html .= $this->$value($page,$options['url'],$options['range']);
+		}
+		$html .= '</div>';
+		
+		return $html;
+	}
+	
+	public function _prev($page,$url) {
+		if($this->hasPrev($page)) {
+			return '<a class="prev_page" href="'.$this->urlPrev($page,$url).'" title="'.$this->i18n['prev_page'].'">'.$this->i18n['prev_page'].'</a>';
+		} else {
+			return '<span class="disabled prev_page">'.$this->i18n['prev_page'].'</span>';
+		}
+	}
+	
+	public function _pages($page,$url,$range) {
+		$range--;
+		$pages_list = array();
+
+		$offset_prev =  ($this->current($page)-$range);
+		if($offset_prev < 1) $offset_prev = 1;
+		for ($i=$offset_prev; $i < $this->current($page); $i++) { 
+			$pages_list[] = $i;
+		}
+		
+		$pages_list[] = $this->current($page);
+		
+		$offset_next =  ($this->current($page)+$range);
+
+		if($offset_next > $page->totalPages) $offset_next = $page->totalPages;
+		for ($i=$this->current($page); $i < $offset_next; $i++) { 
+			$pages_list[] = $i+1;
+		}
+		
+		
+		$html = "";
+		foreach ($pages_list as $p) {
+			# code...
+			if ($this->current($page) == $p) {
+				$html .= '<span class="current number">'.$p.'</span>';
+			} else {
+				$html .= '<a class="number" href="'.$this->getFormatedUrl($p,$url).'">'.$p.'</a>';
+			}
+		}
+
+		return $html;
+	}
+	
+	public function _next($page,$url) {
+		if($this->hasNext($page)) {
+			return '<a class="next_page" href="'.$this->urlNext($page,$url).'" title="'.$this->i18n['next_page'].'">'.$this->i18n['next_page'].'</a>';
+		} else {
+			return '<span class="disabled next_page">'.$this->i18n['next_page'].'</span>';
+		}
+	}
+	
+	// Displaying items 6 - 10 of 26 in total
+	public function info($page) {
+		$current_page = $page->currentPage;
+		$per_page = $page->perPage;
+		$records = count($page->results);
+		
+		$offset = (($current_page-1) * $per_page);
+		$init = $offset + 1;
+		$end = $offset + $records;
+		
+		if ($page->totalPages < 2) {
+			switch ($page->totalRecords) {
+			case 0:
+	        echo $this->i18n['page_info']['0'];
+	        break;
+	    case 1:
+	        echo $this->i18n['page_info']['1'];
+	        break;
+	    default;
+	        echo $this->sprintf2($this->i18n['page_info']['all'],array('value'=>$page->totalRecords));
+	        break;
+			}
+		} else {
+			echo $this->sprintf2($this->i18n['page_info']['range'],array('from'=>$init,'to'=>$end,'all'=>$page->totalRecords));
+		}
+	}
+	
+	
+	public function getFormatedUrl($pageNumber, $url = "") {
+		$params = "";
 		$currentUrl = $this->getURL();
 		if (strpos($currentUrl,'?') != false) {
 			$params = substr($currentUrl, strpos($currentUrl,'?'), strlen($currentUrl));			
-		}
-		foreach ($this->model->getPages() as $page){
-			$urlPages[] = (substr($url,-1) == '/')? $url.$page.$params:$url."/".$page.$params;
-		}
-		return $urlPages;
-	}
-	
-	private function getFormatedUrl($pageNumber) {
-		$url = $this->getURL();
-		if (strpos($url,'?') != false) {
-			$params = substr($url, strpos($url,'?'), strlen($url));
-			$url = str_replace($params,'',$url);
-		}
-		$url = substr($url, 0, strrpos($url,'/'));
-		return $url."/".$pageNumber.$params;
+		}	
+		return APP_URL.$url."/".$pageNumber.'/'.$params;
 	}
 	
 	private function getURL(){

@@ -6,9 +6,10 @@ class ModuleBlogPost extends AppModel {
 
 	public function __construct() {
 		parent::__construct();
-		$this->imports('Comment');
+		$this->imports('Page');
+		$this->imports('Selector');
 		$this->imports('Tag');
-		$this->imports('Paginator');
+		$this->imports('Comment');
 	}
 }
 ?>

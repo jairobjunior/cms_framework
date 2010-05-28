@@ -19,8 +19,8 @@
 		 *
 		 * @param string $filename
 		 */
-		public function renderPage($filename) {
-			if ($this->gzip) ob_start('ob_gzhandler');
+		public function renderPage($filename) {	
+			if($this->gzip && ini_get('zlib.output_compression') != 1)	ob_start('ob_gzhandler');
 			return $this->fetch($filename);
 		}
 		
