@@ -11,7 +11,7 @@
 		private $variables   = array();
 		public $gzip       	 = true;
 		public $partial_path = 'partials/';
-		
+		public $params = array();
 		
 		
 		/**

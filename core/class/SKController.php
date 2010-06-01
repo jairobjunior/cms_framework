@@ -29,8 +29,9 @@
 		}
 		
 		public function render($view){
+			$this->loadHelpers();
 			$view = $view[0] == '/' ? substr($view, 1) : 'views/'.strtolower($this->request->controller_name).'/'.$view;
-			
+
 			$content = $this->template->renderPage($view.".php");
 			
 			// Para não redenrizar layout.
@@ -84,7 +85,8 @@
 			$this->$action();
 			$this->afterFilter();
 			
-			$this->loadHelpers();
+			
+			$this->template->params = $this->params;
 			$this->render($action);
 		}
 		
@@ -100,7 +102,6 @@
 			$core_helpers = array('Date','Html','Image','Text','Paginate');
 			
 			$this->helpers = array_merge($this->helpers, $this->config['default_helpers']);
-			
 			// Adiciona os helpers na view.
 			foreach ($this->helpers as $helper) {
 				$local = in_array($helper, $core_helpers) ? CORE : ROOT;

@@ -13,10 +13,17 @@ class Page extends AppBehavior {
 		// Pega o numero de registro por página.
 		$this->perPage = empty($params['perPage']) ? $this->model->perPage: $params['perPage'];
 		$params = array_merge($this->model->params, $params);
-
+		$this->model->addBehaviors(&$params);
+		
+		
 		// Total de registros no banco do módulo passado com parametro
 		$totalRecords = $this->model->query("SELECT COUNT(*) as count_all FROM ".$this->model->table." WHERE ".$this->model->getStringWhere($params['where']));
-		$this->totalRecords = $totalRecords[0]['count_all']; 
+		$this->totalRecords = $totalRecords[0]['count_all'];
+		
+		if($this->totalRecords == 0) {
+			$this->results = false;
+			return $this;
+		}
 		
 		// Calcula o total de páginas
 		$this->totalPages = ceil($this->totalRecords / $this->perPage);
@@ -27,7 +34,7 @@ class Page extends AppBehavior {
 	
 		// Verifica de onde irá iniciar a listagem dos registros
 		$from = (($this->currentPage-1) * $this->perPage);
-	
+
 		// Consulta os registros de acordo com o limit.
 		$params['limit'] = $from.",".$this->perPage;
 		

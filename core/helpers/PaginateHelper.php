@@ -51,22 +51,32 @@ class PaginateHelper extends SKHelper {
 		
 		$html = '<div class="'.$options['class'].'">';
 		foreach ($types[$options['type']] as $value) {
-			$html .= $this->$value($page,$options['url'],$options['range']);
+			$html .= $this->$value($page,$options);
 		}
 		$html .= '</div>';
 		
 		return $html;
 	}
 	
-	public function _prev($page,$url) {
+	public function _prev($page,$options) {
+		$defaults = array('show'=>true);
+		$options = array_merge($defaults, $options);
+		$text = isset($options['text']) ? $options['text'] : $this->i18n['prev_page'];
+		
 		if($this->hasPrev($page)) {
-			return '<a class="prev_page" href="'.$this->urlPrev($page,$url).'" title="'.$this->i18n['prev_page'].'">'.$this->i18n['prev_page'].'</a>';
+			return '<a class="prev_page" href="'.$this->urlPrev($page,$options['url']).'" title="'.$text.'">'.$text.'</a>';
 		} else {
-			return '<span class="disabled prev_page">'.$this->i18n['prev_page'].'</span>';
+			if($options['show']){
+				$html = '<span class="disabled prev_page">'.$text.'</span>';
+			}else{
+				$html = '';
+			}
+			return $html;
 		}
 	}
 	
-	public function _pages($page,$url,$range) {
+	public function _pages($page,$options) {
+		$range = $options['range'];
 		$range--;
 		$pages_list = array();
 
@@ -92,18 +102,27 @@ class PaginateHelper extends SKHelper {
 			if ($this->current($page) == $p) {
 				$html .= '<span class="current number">'.$p.'</span>';
 			} else {
-				$html .= '<a class="number" href="'.$this->getFormatedUrl($p,$url).'">'.$p.'</a>';
+				$html .= '<a class="number" href="'.$this->getFormatedUrl($p,$options['url']).'">'.$p.'</a>';
 			}
 		}
 
 		return $html;
 	}
 	
-	public function _next($page,$url) {
+	public function _next($page,$options) {
+		$defaults = array('show'=>true);
+		$options = array_merge($defaults, $options);
+		$text = isset($options['text']) ? $options['text'] : $this->i18n['next_page'];
+		
 		if($this->hasNext($page)) {
-			return '<a class="next_page" href="'.$this->urlNext($page,$url).'" title="'.$this->i18n['next_page'].'">'.$this->i18n['next_page'].'</a>';
+			return '<a class="next_page" href="'.$this->urlNext($page,$options['url']).'" title="'.$text.'">'.$text.'</a>';
 		} else {
-			return '<span class="disabled next_page">'.$this->i18n['next_page'].'</span>';
+			if($options['show']){
+				$html = '<span class="disabled next_page">'.$text.'</span>';
+			}else{
+				$html = '';
+			}
+			return $html;
 		}
 	}
 	

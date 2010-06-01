@@ -18,6 +18,9 @@ abstract class SKModel {
 	protected $uses = array();
 	private $usesColumns = array('trash' => '`deleted` = 0', 'status' => '`status` = 1');
 	private $noFlagTables = array('core_comments');
+	
+	// Faz o cache de tags ou dos selectors.
+	protected $cache = array();
 
 	public $table = "";
 	public $primaryKey = "id";
@@ -43,7 +46,6 @@ abstract class SKModel {
 
 
 	protected function imports($class) {
-		// TODO: 
 		require_once CORE."/models/behaviors/".$class.".php";
 		//Instância o objeto correspondente a classe passada.
 		$new_import = new $class(&$this);
@@ -64,32 +66,10 @@ abstract class SKModel {
 	}
 
 	public function findAll($params = array()) {
-		//Implementar label e tags
-		/*	array(
-		 'label' => 'cidade=arapiraca|cidade=maceio',
-		 'tags' => 'esporte,ronaldinho',
-		 'fields' => 'author, title',
-		 'limit' => '10',
-		 'where' => 'name = danillo',
-		 'order' => 'DESC'
-		 )*/
-
-		 $params = array_merge($this->params, $params);
-
 		
-		// SELECTS
-		if (!empty($params['select'])) {
-			if(!$selects = $this->findAllModelsUsingSelector(&$params)){
-				return false;
-			}
-		}
+		$params = array_merge($this->params, $params);
 
-		// TAGS
-		if (!empty($params['tags'])) {
-			if(!$tags = $this->findAllWithTags(&$params)){
-				return false;
-			}
-		}
+		$this->addBehaviors(&$params);
 
 		$sql = "SELECT ".$params['fields']." FROM ".$this->table;
 		$sql .= " ".$params['join']." ";					 
@@ -100,7 +80,6 @@ abstract class SKModel {
 		
 		//print_r($sql);
 		$records = $this->connection->find_with_key($sql,$this->primaryKey);
-		
 		
 		$record_size = count($records);
 		if($record_size === 0){
@@ -113,16 +92,19 @@ abstract class SKModel {
 		}
 		
 		
+		// Adiciona novos atributos do cms ao registro.
 		$ids = array();
 		foreach ($records as $record) {
 			$ids[] = "'".$record['id']."'";
 		}
+		
 		$ids = join(',',$ids);
 		
 		// Inclui nos registros seus selects e options.
 		if(in_array('selector',$params['include'])){
 			// Se já houver selects não consulta
-			if(empty($selects)){
+			if(isset($this->cache['selects'])){
+				$selects = $this->cache['selects'];
 				$name = get_class($this);
 				if(!empty($this->name)) $name = $this->name;
 				$recordType = "Modules::".$name;
@@ -202,6 +184,23 @@ abstract class SKModel {
 	}
 	
 	
+	public function addBehaviors(&$params) {
+		// SELECTS
+		if (!empty($params['select'])) {
+			if(!$this->cache['selects'] = $this->findAllModelsUsingSelector(&$params)){
+				return false;
+			}
+		}
+
+		// TAGS
+		if (!empty($params['tags'])) {
+			if(!$this->cache['tags'] = $this->findAllWithTags(&$params)){
+				return false;
+			}
+		}
+	}
+	
+	
 	/**
 	 * Filter values from one multi array 
 	 *
@@ -253,8 +252,20 @@ abstract class SKModel {
 	}
 	
 	
+	public static function protect($value) {
+		if (get_magic_quotes_gpc()) {
+			$value = stripslashes($value);
+		}
+		
+		if (is_numeric($value)) {
+			 return "'".$value."'";
+		}
+		   
+		return "'".mysql_real_escape_string($value)."'";
+	}
+	
 	public function find($id, $params = array()) {
-		$params['where'] = $this->table.".".$this->primaryKey." = ".$id . (!empty($params['where'])? " AND ".$params['where']:"");
+		$params['where'] = $this->table.".".$this->primaryKey." = ".SKModel::protect($id). (!empty($params['where'])? " AND ".$params['where']:"");
 		$params['limit'] = 1;
 		$record = $this->findAll($params);
 		if(!$record) return false;

@@ -3,7 +3,7 @@
 	define('CORE', "../core");
 	
 	// Mostra tempos do benchmark.
-	define('BENCHMARK',true);
+	define('BENCHMARK',false);
 	
 	
 	// Configurações do baco de dados.

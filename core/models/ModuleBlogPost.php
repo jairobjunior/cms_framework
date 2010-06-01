@@ -11,5 +11,6 @@ class ModuleBlogPost extends AppModel {
 		$this->imports('Tag');
 		$this->imports('Comment');
 	}
+	
 }
 ?>

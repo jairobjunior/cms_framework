@@ -1,10 +1,10 @@
 <?php
 	
 	$i18n = array (
-		
+		'lang' => 'pt-br',
 		'date' => array(
 			'default' => '%d/%m/%Y',
-			'inWords' => '%d de %F de %Y',
+			'inWords' => '%d de %B de %Y',
 			'months' => array('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'),
 			'days' => array('domingo','segunda','terça','quarta','quinta','sexta','sábado')
 		),

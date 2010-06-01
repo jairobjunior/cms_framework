@@ -1,4 +1,12 @@
 <?
+
+/**
+ * Sook CMS Framework
+ * Version 0.1.3
+ * 
+ */
+
+
 // Inicio Benchmark
 if(BENCHMARK){
 	include(CORE.'/class/Benchmark.php');
