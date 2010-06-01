@@ -21,6 +21,13 @@ function include_model($model, $super = null) {
 	require ROOT.'/models/'.$model.'.php';
 }
 
+function array_first($arr) {
+	foreach ($arr as $key => $value) {
+		return $value;
+	}
+}
+
+
 
 /**
  * *********** BOOT ************
