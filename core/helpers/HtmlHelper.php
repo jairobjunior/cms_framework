@@ -90,9 +90,8 @@ class HtmlHelper extends SKHelper {
 		$this->javascripts = array_merge($this->javascripts, $files);
 	}
 	
-	
 	// Print the css on page.
-	function showjs($files) {
+	function showjs($files = array()) {
 		$files = is_array($files) ? $files : array($files);
 		$result = '';
 		$this->javascripts = array_merge($files, $this->javascripts);

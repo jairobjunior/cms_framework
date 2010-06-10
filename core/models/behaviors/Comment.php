@@ -3,13 +3,21 @@ class Comment extends AppBehavior {
 	
 	public function findComments($id) {
 		$recordType = "Modules::".get_class($this->model);
-		$this->model->table = "core_comments";
 		
 		$params = array();
-		$params['where'] = "record_type = '".$recordType."' AND record_id = ".$id." AND status = 1";
+		$params['where'] = "record_type = '".$recordType."' AND record_id = ".$id." AND published = 1";
 		$params['order'] = "id ASC";
 		
-		return $this->model->findAll($params);
+		$sql = 'SELECT * FROM core_comments  WHERE record_type = "'.$recordType.'" AND record_id = '.$id.' AND published = 1 ORDER BY id ASC';
+		return $this->model->query($sql);
+	}
+	
+	
+	public function countComments($id) {
+		$recordType = "Modules::".get_class($this->model);
+		$sql = 'SELECT COUNT(*) as total FROM core_comments WHERE record_type = "'.$recordType.'" AND record_id = '.$id.' AND published = 1';
+		$result = $this->model->query($sql);
+		return $result[0]['total'];
 	}
 	
 	public function saveComment($data) {

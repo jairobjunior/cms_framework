@@ -70,8 +70,9 @@
 		}
 		
 		
-		function redirect($url) {
-			header('Location: '.APP_URL.$url);
+		function redirect($url,$full = false) {
+			$url = $full ? $url : APP_URL.$url;
+			header('Location: '.$url);
 		}
 		
 		

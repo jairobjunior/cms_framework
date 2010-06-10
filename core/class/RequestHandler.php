@@ -12,6 +12,7 @@
 		public $action_name;
 		public $valid = false;
 		public $params = array();
+		public $referer;
 		
 		/**
 		 * RequestHandler Constructor
@@ -23,14 +24,18 @@
 			$route = $this->getRoute($route, $app_root);
 			if(is_array($route)) {
 				if(isset($route['redirect'])){
+					if(!isset($route[0])) $route[0] = null;
 					self::redirect($route['redirect'],$route[0]);
 				} 
 				$this->controller_name = $route[0];
 				$this->action_name = $route[1] ? $route[1] : 'index';
-				// TODO: Verificar se ta ok
+				
 				$this->params = array_merge($this->params, $_GET, $_POST);
+				if(isset($_SERVER['HTTP_REFERER'])) $this->referer = $_SERVER['HTTP_REFERER'];
 				
 				$this->valid = true;
+				
+				
 			}
 		}
 		

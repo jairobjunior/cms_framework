@@ -9,7 +9,7 @@ class Page extends AppBehavior {
 	
 	
 	function paginate($page = 0, $params = array()) {
-		
+		if(!isset($page)) $page = 1; 
 		// Pega o numero de registro por página.
 		$this->perPage = empty($params['perPage']) ? $this->model->perPage: $params['perPage'];
 		$params = array_merge($this->model->params, $params);

@@ -9,6 +9,23 @@ class ImageHelper extends SKHelper {
 		$img .= ' />';
 		return $img;
 	}
+	
+	
+	public function gravatar($email, $default = null) {
+		$gravatarMd5 = "";
+
+		$default = ($default != null) ? "?default=".urlencode( $default ) : '';
+		
+		if ($email != "" && isset($email)) {
+	    $gravatarMd5 = md5($email);
+	  }
+	
+	
+	//"?default=" . urlencode( $default ) .
+		
+		
+		return '<img src="http://www.gravatar.com/avatar/'.$gravatarMd5.$default.'" width="56" alt="Avatar">';
+	}
 }
 
 ?>

@@ -13,7 +13,7 @@ abstract class SKModel {
 
 	public $connection;
 	
-	protected $perPage = 10;
+	public $perPage = 10;
 
 	protected $uses = array();
 	private $usesColumns = array('trash' => '`deleted` = 0', 'status' => '`status` = 1');
@@ -64,11 +64,17 @@ abstract class SKModel {
 	public function execute($sql) {
 		return $this->connection->query($sql);
 	}
-
+	
+	/**
+	 * Busca por todos os registros
+	 *
+	 * @param array $params 
+	 * @return array dos registros buscados
+	 */
 	public function findAll($params = array()) {
 		
 		$params = array_merge($this->params, $params);
-
+		
 		$this->addBehaviors(&$params);
 
 		$sql = "SELECT ".$params['fields']." FROM ".$this->table;
@@ -78,7 +84,7 @@ abstract class SKModel {
 		$sql .= " ORDER BY ".$params['order'];
 		$sql .= (!empty($params['limit'])? " LIMIT ".$params['limit']:"");
 		
-		//print_r($sql);
+		//fb($sql);
 		$records = $this->connection->find_with_key($sql,$this->primaryKey);
 		
 		$record_size = count($records);
@@ -221,8 +227,9 @@ abstract class SKModel {
 
 
 	/**
-	 * Get a model name
-	 *
+	 * Obtem o nome do modelo
+	 * 
+	 * @example  ModuleNews
 	 * @return string
 	 */
 	function getModelName() {
