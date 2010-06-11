@@ -106,6 +106,8 @@ abstract class SKModel {
 		
 		$ids = join(',',$ids);
 		
+		
+		
 		// Inclui nos registros seus selects e options.
 		if(in_array('selector',$params['include'])){
 			// Se já houver selects não consulta
@@ -186,6 +188,31 @@ abstract class SKModel {
 				$records[$key]['photos'] = $photos;
 			}
 		}
+
+		
+		// Adiciona o numero de comentários.
+		if(in_array('comments_number',$params['include'])){
+			$name = get_class($this);
+			if(!empty($this->name)) $name = $this->name;
+			$recordType = "Modules::".$name;
+			$sql = 'SELECT record_id, count(*) as count FROM `core_comments` WHERE record_type = \''.$recordType.'\' AND record_id IN ('.$ids.')  AND published = 1 GROUP BY `record_id`';
+			
+			$counts_comments = $this->connection->find_with_key($sql,'record_id');
+			// Seta as tags nos registros como array vazio
+			foreach ($records as $key => $value) {
+				$records[$key]['comments_number'] = 0;
+			}
+			
+			foreach ($counts_comments as $key => $value) {
+				$records[$key]['comments_number'] = $value['count'];
+			}
+			
+		}
+		
+		
+		
+		
+		
 		return $records; 
 	}
 	
