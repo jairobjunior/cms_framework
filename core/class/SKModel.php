@@ -2,7 +2,7 @@
 require(CORE."/class/SKDatabase.php");
 /*
 * @autor : Teste.
-
+* $version : 1 .teste
 
 
 */
