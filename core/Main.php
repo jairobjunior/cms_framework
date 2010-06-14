@@ -3,7 +3,8 @@
 /**
  * Sook CMS Framework
  * Version 0.1.3
- * 
+ *
+ *
  */
 
 
@@ -17,7 +18,7 @@ if(BENCHMARK){
 /**
  * Inclui um modulo a ser usado no controlador.
  *
- * @param string $model 
+ * @param string $model
  * @return void
  * @author Danillo César de Oliveira Melo
  */
@@ -63,7 +64,7 @@ include(CORE.'/class/RequestHandler.php');
 
 
 /**
- * Inicia o sistema de roteamento. 
+ * Inicia o sistema de roteamento.
  */
 $request = new RequestHandler($route);
 
@@ -87,3 +88,4 @@ if($request->valid){
 }
 
 ?>
+
