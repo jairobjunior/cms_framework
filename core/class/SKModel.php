@@ -312,5 +312,10 @@ abstract class SKModel {
 	public function save($data) {
 		return $this->connection->save($this->table, $data);
 	}
+	
+	
+	public function testGit() {
+		# code...
+	}
 }
 ?>
