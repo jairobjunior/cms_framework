@@ -1,10 +1,14 @@
 <?php
 require(CORE."/class/SKDatabase.php");
-/*
-* @autor : Teste.
-* $version : 1 .teste
 
-
+/**
+* ORM de integração com o CMS Sook
+*
+* @author Sook < contato@sook.com.br>
+* @version 0.1
+* @access abstract
+* @package Default
+* @example Classe SKModel.
 */
 
 abstract class SKModel {
@@ -31,6 +35,12 @@ abstract class SKModel {
 	public $table = "";
 	public $primaryKey = "id";
 
+    /**
+    * Função Construtora da Classe
+    * @access public
+    * @return void
+    */
+
 	public function __construct() {
 		$this->connection = SKDatabase::getInstance();
 		if (empty($this->table)) {
@@ -38,7 +48,13 @@ abstract class SKModel {
 		}
 	}
 
-
+    /**
+    * Função para chamada de métodos behaviors
+    * @access public
+    * @param Array $method
+    * @param Array $args
+    * @return mixed
+    */
 
 	public function __call($method, $args) {
 		// Verifica se realmente existe o método desejado
@@ -50,6 +66,12 @@ abstract class SKModel {
 	}
 
 
+    /**
+    * Função para importação de funções do behaviors caso não exista no model
+    * @access protected
+    * @param Array $class
+    * @return void
+    */
 
 	protected function imports($class) {
 		require_once CORE."/models/behaviors/".$class.".php";
@@ -63,20 +85,35 @@ abstract class SKModel {
 		}
 	}
 
+    /**
+    * Função para procurar dados no banco
+    * @access public
+    * @param String $sql
+    * @return mixed
+    */
+
 	public function query($sql) {
 		return $this->connection->find($sql);
 	}
+
+    /**
+    * Função para execução de query
+    * @access public
+    * @param String $sql
+    * @return mixed
+    */
 
 	public function execute($sql) {
 		return $this->connection->query($sql);
 	}
 
-	/**
-	 * Busca por todos os registros
-	 *
-	 * @param array $params
-	 * @return array dos registros buscados
-	 */
+    /**
+    * Função para busca de todos os registros
+    * @access public
+    * @param Array $params
+    * @return Array $records
+    */
+
 	public function findAll($params = array()) {
 
 		$params = array_merge($this->params, $params);
@@ -222,6 +259,12 @@ abstract class SKModel {
 		return $records;
 	}
 
+    /**
+    * Função para adição dos Behaviors
+    * @access public
+    * @param Array $params
+    * @return boolean
+    */
 
 	public function addBehaviors(&$params) {
 		// SELECTS
@@ -241,9 +284,12 @@ abstract class SKModel {
 
 
 	/**
-	 * Filter values from one multi array
-	 *
-	 */
+    * Função para filtrar valores de multiplos arrays
+    * @access public
+    * @param String $sql
+    * @return Array
+    */
+
 	function filter_by_value ($array, $index, $value) {
 		$newarray = array();
        if(is_array($array) && count($array)>0) {
@@ -259,19 +305,26 @@ abstract class SKModel {
    }
 
 
-	/**
-	 * Obtem o nome do modelo
-	 *
-	 * @example  ModuleNews
-	 * @return string
-	 */
+    /**
+    * Função que obtem o nome do modelo
+    * @access public
+    * @return String
+    */
+
 	function getModelName() {
 		$name = get_class($this);
 		if(!empty($this->name)) $name = $this->name;
 		return ucfirst(strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $name)));
 	}
 
-	//Adiciona a cláusula WHERE os valores a serem utilizados pelos modulos
+
+    /**
+    * Função que adiciona a cláusula WHERE aos valores a serem  utilizados pelos modulos
+    * @access public
+    * @param Array $paramWhere
+    * @return String
+    */
+
 	public function getStringWhere($paramWhere) {
 		if (!in_array($this->table, $this->noFlagTables)) {
 			foreach ($this->uses as $key) {
@@ -281,6 +334,12 @@ abstract class SKModel {
 		return $paramWhere;
 	}
 
+    /**
+    * Função que procura os primeiros campos da tabela
+    * @access public
+    * @param Array $param
+    * @return Boolean
+    */
 
 	public function findFirst($params = array()) {
 		$params = array_merge($this->params, $params);
@@ -291,6 +350,12 @@ abstract class SKModel {
 		return (!empty($record)? $record : false);
 	}
 
+    /**
+    * Função para proteção e omissão de valores
+    * @access public
+    * @param Array $paramWhere
+    * @return String
+    */
 
 	public static function protect($value) {
 		if (get_magic_quotes_gpc()) {
@@ -304,6 +369,14 @@ abstract class SKModel {
 		return "'".mysql_real_escape_string($value)."'";
 	}
 
+    /**
+    * Função que procura os campos utilizando a clausula WHERE
+    * @access public
+    * @param String $id
+    * @param Array $params
+    * @return Array
+    */
+
 	public function find($id, $params = array()) {
 		$params['where'] = $this->table.".".$this->primaryKey." = ".SKModel::protect($id). (!empty($params['where'])? " AND ".$params['where']:"");
 		$params['limit'] = 1;
@@ -313,7 +386,11 @@ abstract class SKModel {
 		return (!empty($record)? $record:array());
 	}
 
-	//TODO Criar método findFirst
+    /**
+    * Função para Salvar dados no banco
+    * @access public
+    * @return Mixed
+    */
 
 	public function save($data) {
 		return $this->connection->save($this->table, $data);
