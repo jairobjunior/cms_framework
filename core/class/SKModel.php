@@ -1,6 +1,4 @@
 <?php
-require(CORE."/class/SKDatabase.php");
-
 /**
 * ORM de integração com o CMS Sook
 *
@@ -8,8 +6,11 @@ require(CORE."/class/SKDatabase.php");
 * @version 0.1
 * @access abstract
 * @package Default
-* @example Classe SKModel.
 */
+
+
+require(CORE."/class/SKDatabase.php");
+
 
 abstract class SKModel {
 
