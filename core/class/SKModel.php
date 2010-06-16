@@ -1,7 +1,5 @@
 <?php
 require(CORE."/class/SKDatabase.php");
-
-
 /**
  * ORM de integração com o CMS Sook
  *
@@ -104,30 +102,30 @@ abstract class SKModel {
 	}
 
     /**
-    * Função para busca de todos os registros
+    * Função para busca de todos os registros<br/>
+    *     $post = new Post();<br/>
+    *     $posts = $post->findAll(array(<br/>
+    *        'fields' => 'id,title',<br/>
+    *        'include' => array('tags','comments_number','photos','selector'),<br/>
+    *        'selector' => 'category=car'<br/>
+    *        'tags' => 'php,html'<br/>
+    *        'where' => 'title = "danillo"',<br/>
+    *        'limit' => 10,<br/>
+    *        'order' => 'id DESC'<br/>
+    * ));<br/>
+
     * @access public
     *
     * @return Array $records
     *
-    * $post = new Post();
-    * $posts = $post->findAll(array(
-    *   'fields' => 'id,title',
-    *   'include' => array('tags','comments_number','photos','selector'),
-    *   'selector' => 'category=car'
-    *   'tags' => 'php,html'
-    *   'where' => 'title = "danillo"',
-    *   'limit' => 10,
-    *   'order' => 'id DESC'
-    * ));
-    *
-    * @param Array $params (Opcional)
-    * fields => Nomes das colunas separados por vírgula que retornarão no resultado da consulta sql. Se vazio retorna todos os campos.
-    * include => Funções seletoras auxiliares incluídas para fazer consultas padronizadas e distintas por um atributo.
-    * selector => Nome das colunas que servirão para distinguir os dados através de categrias.
-    * tags => Tags (strings) para filtrar as consulas por determinados atributos.
-    * where => Usada para extrair apenas os registros que satisfazem o critério especificado.
-    * limit => Usada para extrair os registros limitando a uma quantidade de resultados.
-    * order => Usada para ordernar os registros.
+    * @param Array $params (Opcional) <br/>
+    * fields => Nomes das colunas separados por vírgula que retornarão no resultado da consulta sql. Se vazio retorna todos os campos. <br/>
+    * include => Funções seletoras auxiliares incluídas para fazer consultas padronizadas e distintas por um atributo.<br/>
+    * selector => Nome das colunas que servirão para distinguir os dados através de categrias.<br/>
+    * tags => Tags (strings) para filtrar as consulas por determinados atributos.<br/>
+    * where => Usada para extrair apenas os registros que satisfazem o critério especificado.<br/>
+    * limit => Usada para extrair os registros limitando a uma quantidade de resultados.<br/>
+    * order => Usada para ordernar os registros.<br/>
     *
     */
 
