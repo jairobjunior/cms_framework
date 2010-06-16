@@ -1,17 +1,12 @@
 <?php
-/**
-* ORM de integração com o CMS Sook
-*
-* @author Sook < contato@sook.com.br>
-* @version 0.1
-* @access abstract
-* @package Default
-*/
-
-
 require(CORE."/class/SKDatabase.php");
 
 
+/**
+ * ORM de integração com o CMS Sook
+ *
+ * @author Sook contato@sook.com.br
+ */
 abstract class SKModel {
 
 	const NO_PUBLISHED = 0;
