@@ -106,8 +106,29 @@ abstract class SKModel {
     /**
     * Função para busca de todos os registros
     * @access public
-    * @param Array $params
+    *
     * @return Array $records
+    *
+    * $post = new Post();
+    * $posts = $post->findAll(array(
+    *   'fields' => 'id,title',
+    *   'include' => array('tags','comments_number','photos','selector'),
+    *   'selector' => 'category=car'
+    *   'tags' => 'php,html'
+    *   'where' => 'title = "danillo"',
+    *   'limit' => 10,
+    *   'order' => 'id DESC'
+    * ));
+    *
+    * @param Array $params (Opcional)
+    * fields => Nomes das colunas separados por vírgula que retornarão no resultado da consulta sql. Se vazio retorna todos os campos.
+    * include => Funções seletoras auxiliares incluídas para fazer consultas padronizadas e distintas por um atributo.
+    * selector => Nome das colunas que servirão para distinguir os dados através de categrias.
+    * tags => Tags (strings) para filtrar as consulas por determinados atributos.
+    * where => Usada para extrair apenas os registros que satisfazem o critério especificado.
+    * limit => Usada para extrair os registros limitando a uma quantidade de resultados.
+    * order => Usada para ordernar os registros.
+    *
     */
 
 	public function findAll($params = array()) {
