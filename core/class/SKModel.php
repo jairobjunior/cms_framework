@@ -1,10 +1,12 @@
 <?php
 require(CORE."/class/SKDatabase.php");
+
 /**
  * ORM de integração com o CMS Sook
  *
  * @author Sook contato@sook.com.br
  */
+
 abstract class SKModel {
 
 	const NO_PUBLISHED = 0;
@@ -63,7 +65,7 @@ abstract class SKModel {
     /**
     * Função para importação de funções do behaviors caso não exista no model
     * @access protected
-    * @param Array $class
+    * @param String $class
     * @return void
     */
 
@@ -100,6 +102,7 @@ abstract class SKModel {
 	public function execute($sql) {
 		return $this->connection->query($sql);
 	}
+
 
     /**
     * Função para busca de todos os registros<br/>
@@ -276,6 +279,8 @@ abstract class SKModel {
 
     /**
     * Função para adição dos Behaviors
+    *     $post = new Post();<br/>
+    *     $posts = $post-> addBehaviors(select => array('id,nome'))
     * @access public
     * @param Array $params
     * @return boolean
@@ -350,7 +355,9 @@ abstract class SKModel {
 	}
 
     /**
-    * Função que procura os primeiros campos da tabela
+    * Procura o primeiro campo da tabela
+    *     $post = new Post();<br/>
+    *     $posts = $post->findFirst(array(...(ver exemplo na função findAll)<br/>
     * @access public
     * @param Array $param
     * @return Boolean
@@ -366,7 +373,7 @@ abstract class SKModel {
 	}
 
     /**
-    * Função para proteção e omissão de valores
+    * Proteção e omissão de valores
     * @access public
     * @param Array $paramWhere
     * @return String
@@ -385,7 +392,10 @@ abstract class SKModel {
 	}
 
     /**
-    * Função que procura os campos utilizando a clausula WHERE
+    * Procura os campos utilizando a clausula WHERE
+    *     $post = new Post();<br/>
+    *     $posts = $post->find('1',array(...(ver exemplo na função findAll)<br/>
+    *
     * @access public
     * @param String $id
     * @param Array $params
@@ -402,7 +412,7 @@ abstract class SKModel {
 	}
 
     /**
-    * Função para Salvar dados no banco
+    * Salva dados no banco
     * @access public
     * @return Mixed
     */
